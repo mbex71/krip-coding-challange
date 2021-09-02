@@ -1,8 +1,18 @@
-import { useQuery } from "react-query";
-import type { UseQueryResult } from "react-query";
+import { useMutation, useQuery } from 'react-query';
+import type { UseQueryResult, UseMutationResult } from 'react-query';
 
-import { getMerchantList } from "@modules/repositories/merchant";
-import { TMerchant } from "@modules/entities/merchant";
+import { TMerchant } from '@modules/entities/merchant';
+import {
+  getMerchantList,
+  addMerchant,
+} from '@modules/repositories/merchant';
 
 export const useMerchantList = () =>
-  useQuery<TMerchant[], Error>("merchantList", getMerchantList);
+  useQuery<TMerchant[], Error>('merchantList', getMerchantList);
+
+export const useAddMerchant = (): UseMutationResult<
+  unknown,
+  unknown,
+  TMerchant,
+  unknown
+> => useMutation((param: TMerchant) => addMerchant(param));

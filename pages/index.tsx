@@ -1,158 +1,91 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import React, { useMemo } from "react";
-import {
-  useTable,
-  useSortBy,
-  Column,
-  useFilters,
-  FilterProps,
-} from "react-table";
-import StarRatingComponent from "react-star-rating-component";
+import type { NextPage } from 'next';
+import Head from 'next/head';
+import Link from 'next/link';
+import React, { useEffect, useMemo, useState } from 'react';
+import Select from 'react-select';
 
-import { useMerchantList } from "@modules/hooks/useMerchant";
-import type { TMerchant } from "@modules/entities/merchant";
-
-interface ITable {
-  columns: Array<Column<object>>;
-  data: TMerchant[];
-}
-
-const SelectedFilter = ({
-  column: { filterValue, setFilter, preFilteredRows },
-}) => {
-  const options = React.useMemo(() => {
-    const options = new Set();
-    preFilteredRows.forEach((row) => {
-      options.add(row.values[id]);
-    });
-    return [...options.values()];
-  }, [id, preFilteredRows]);
-
-  // Render a multi-select box
-  return (
-    <select
-      value={filterValue}
-      onChange={(e) => {
-        setFilter(e.target.value || undefined);
-      }}
-    >
-      <option value="">All</option>
-      {options.map((option, i) => (
-        <option key={i} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
-  );
-};
-
-const Table: React.FC<ITable> = ({ columns, data }: ITable) => {
-  const { headerGroups, getTableBodyProps, getTableProps, prepareRow, rows } =
-    useTable({ columns, data }, useFilters, useSortBy);
-  return (
-    <table {...getTableProps()} className="table w-full mt-12">
-      <thead>
-        {headerGroups.map((headerGroup, index) => (
-          <tr {...headerGroup.getHeaderGroupProps()} key={index}>
-            {headerGroup.headers.map((column) => {
-              return (
-                <th
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                  key={column.id}
-                >
-                  {column.render("Header")} -{" "}
-                  <span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? "Desc"
-                        : "Asc"
-                      : ""}
-                  </span>
-                </th>
-              );
-            })}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row) => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()} key={row.index} className="hover">
-              {row.cells.map((cell, key) => {
-                if (cell.column.Header === "Rating") {
-                  return (
-                    <td {...cell.getCellProps()} key={key}>
-                      {" "}
-                      <StarRatingComponent
-                        name="rating"
-                        value={cell.value}
-                        starCount={5}
-                      />
-                    </td>
-                  );
-                }
-                return (
-                  <td {...cell.getCellProps()} key={key}>
-                    {cell.render("Cell")}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  );
-};
+import { useMerchantList } from '@modules/hooks/useMerchant';
+import type { TMerchant } from '@modules/entities/merchant';
+import { MerchantTable } from '@components/Tables';
 
 const Home: NextPage = () => {
-  const { data: merchantList, isLoading, isError } = useMerchantList();
-
-  const data = useMemo(() => merchantList, [merchantList]);
-
-  const columns: Column[] = useMemo(
-    () => [
-      {
-        Header: "id",
-        accessor: "id",
-      },
-      {
-        Header: "Label",
-        accessor: "label",
-      },
-      {
-        Header: "Category",
-        accessor: "category",
-        Filter: SelectedFilter,
-        filter: "includes",
-      },
-      {
-        Header: "Rating",
-        accessor: "rating",
-      },
-    ],
-    []
+  const [listData, setListData] = useState<TMerchant[] | undefined>(
+    [],
   );
+  const { data, isLoading, isError } = useMerchantList();
+  const [options, setOptions] = useState([]);
+
+  const handleFilter = (selected) => {
+    if (selected) {
+      setListData(data);
+      setListData((prevState) =>
+        prevState?.filter((item) => item.category === selected.value),
+      );
+    } else {
+      setListData(data);
+    }
+  };
+
+  // const options = [
+
+  //   { value: 'car', label: 'Car' },
+  //   { value: 'fashion', label: 'Fashion' },
+  //   { value: 'other', label: 'Other' },
+  // ]
+
+  useEffect(() => {
+    if (data) {
+      setListData(data);
+      const newMapping = data?.map((item) => ({
+        value: item.category,
+      }));
+      const newArr = Array.from(
+        new Set(newMapping.map((item) => item.value)),
+      );
+      setOptions(
+        newArr.map((item) => ({
+          value: item,
+          label: item?.toUpperCase(),
+        })),
+      );
+    }
+  }, [data]);
 
   return (
     <div className="bg-gray-100 min-h-screen">
       <Head>
         <title>Krip - Coding Challange</title>
-        <meta name="description" content="Generated by create next app" />
+        <meta
+          name="description"
+          content="Generated by create next app"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
         <div className="p-12">
-          <h1 className="text-center font-bold text-2xl">Merchant Listing</h1>
+          <h1 className="text-center font-bold text-2xl">
+            Merchant Listing
+          </h1>
+          <div className="mt-12">
+            <div className="flex justify-between mb-2">
+              <div className="mb-4 flex flex-row justify-start items-center">
+                <h1>Select Filter by: </h1>
+                <Select
+                  instanceId="filterMerchant"
+                  className="w-64 mx-4"
+                  options={options}
+                  onChange={handleFilter}
+                  isClearable
+                />
+              </div>
+              <Link href="/detail">
+                <a className="btn btn-md">Add Merchant</a>
+              </Link>
+            </div>
 
-          {isLoading ? (
-            <div>Loading . . . </div>
-          ) : (
-            <Table columns={columns} data={data ? data : []} />
-          )}
+            <MerchantTable data={listData} isLoading={isLoading} />
+          </div>
         </div>
       </main>
     </div>

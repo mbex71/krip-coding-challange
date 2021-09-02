@@ -1,6 +1,6 @@
 export type TMerchant = {
-  id: number;
-  label: string;
-  category: string;
-  rating: number;
+  id?: number | string;
+  label?: string;
+  category?: string;
+  rating?: number | string;
 };

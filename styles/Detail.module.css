@@ -1,0 +1,10 @@
+.inputrating::-webkit-outer-spin-button,
+.inputrating::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.inputrating[type='number'] {
+  -moz-appearance: textfield;
+}
