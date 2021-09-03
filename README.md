@@ -18,17 +18,10 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-## Learn More
+## Submission Report
 
-To learn more about Next.js, take a look at the following resources:
+- The app is using [Next.js](https://nextjs.org/). It's a React framework for the web. It can handle server side render for React. The system architecture that I use in this project is custom hook based. We make a custom hook for handle state of data. You can check it on **modules** directory. In there you can find **entities** , **hooks** and **repositories**. **Entities** is handle about type of data, **Hook** is handle about state of data and **Repositories** is handle about data layer.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- In this app, I want to make an easy maintainable system by using custom hook modules. Because based on my experience, on using redux (old version), it's hard to maintain.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- in this project, the localstorage is assumed to be the database and timeout delay is as process of data fetching. So if we want to production ready, we can change the localstorage with RDBMS or NO SQL database depends on needs and we can accessing it via API.
